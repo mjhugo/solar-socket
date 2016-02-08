@@ -11,11 +11,15 @@ class EgaugeClientService {
     }
 
     public InstantaneousData buildInstantaneousData(def xml) {
-        def usage = Long.valueOf(xml.r.find { it.@n.text() == 'Grid' }.i.text())
-        def generation = Long.valueOf(xml.r.find { it.@n.text() == 'Solar' }.i.text())
+        def gridIncomingOrOutgoing = Long.valueOf(xml.r.find { it.@n.text() == 'Grid' }.i.text())
+        def generationRawValue = Long.valueOf(xml.r.find { it.@n.text() == 'Solar' }.i.text())
+        def generation = generationRawValue > 0 ? generationRawValue : 0
+
+        def usage = gridIncomingOrOutgoing + generation
+
         return new InstantaneousData(
-                usage: usage > 0 ? usage : 0,
-                generation: generation > 0 ? generation : 0,
+                usage: usage,
+                generation: generation
         )
     }
 }
